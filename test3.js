@@ -1,5 +1,3 @@
-const { dir } = require("console");
-
 const rl = require("readline").createInterface({
   input: process.stdin,
   output: process.stdout,
@@ -55,13 +53,15 @@ const cube = {
   ],
 };
 let performedOrdersCnt = 0;
+let startTime = "";
 rl.setPrompt(printSide(cube.u, "") + printCenter(cube.l, cube.f, cube.r, cube.b, "") + printSide(cube.d, "") + promptMsg);
 rl.prompt();
 rl.on("line", (line) => {
+  if (startTime === "") startTime = new Date();
   line = parse(line);
   for (let i = 0; i < line.length; i++) {
     const letter = line[i] === "2" ? line[i - 1] : line[i];
-    if (letter === quit) doQuit(performedOrdersCnt);
+    if (letter === quit) doQuit();
     performedOrdersCnt++;
     if (letter === rightOrder.up || letter === countOrder.down) [cube.f, cube.r, cube.b, cube.l] = turnToLeftDirection(cube.f, cube.r, cube.b, cube.l, letter);
     if (letter === rightOrder.down || letter === countOrder.up) [cube.f, cube.r, cube.b, cube.l] = turnToRightDirection(cube.f, cube.r, cube.b, cube.l, letter);
@@ -78,9 +78,29 @@ rl.on("close", () => {
   process.exit();
 });
 
-function doQuit(count) {
-  console.log(`\n경과시간: ${undefined}\n조작개수: ${count}\n이용해주셔서 감사합니다.`);
+function doQuit() {
+  const endTime = new Date();
+  const duringTime = calculateDuringTime(endTime);
+  // console.log(`startTime: ${startTime}`, `endTime: ${endTime}`);
+  console.log(`\n경과시간: ${duringTime}\n조작개수: ${performedOrdersCnt}\n이용해주셔서 감사합니다.`);
   rl.close();
+}
+
+function calculateDuringTime(endTime) {
+  let [hour, minutes, seconds] = [endTime.getHours(), endTime.getMinutes(), endTime.getSeconds()];
+  const [startHour, startMinute, startSeconds] = [startTime.getHours(), startTime.getMinutes(), startTime.getSeconds()];
+  if (seconds < startSeconds) {
+    minutes--;
+    if (minutes < startMinute) {
+      hour--;
+      minutes += 60;
+    }
+    seconds += 60;
+  }
+  minutes -= startMinute;
+  seconds -= startSeconds;
+  hour -= startHour;
+  return [hour, minutes, seconds].join(":");
 }
 
 function turnToLeftDirection(front, right, back, left, letter) {
@@ -158,7 +178,7 @@ function parse(line) {
 }
 
 function recover(letter) {
-  const codeNum = line.charCodeAt(0);
+  const codeNum = letter.charCodeAt(0);
   if (codeNum >= 97 && codeNum <= 122) return letter.toUpperCase() + "'";
   return letter;
 }
@@ -171,10 +191,10 @@ function printSide(arr, str) {
   return str + "\n";
 }
 
-function printCenter(arr1, arr2, arr3, arr4, str) {
+function printCenter(left, front, right, back, str) {
   const space = "     ";
   for (let i = 0; i < 3; i++) {
-    str += arr1[i].join(" ") + space + arr2[i].join(" ") + space + arr3[i].join(" ") + space + arr4[i].join(" ") + "\n";
+    str += left[i].join(" ") + space + front[i].join(" ") + space + right[i].join(" ") + space + back[i].join(" ") + "\n";
   }
   return str + "\n";
 }
