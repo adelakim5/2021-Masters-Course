@@ -69,7 +69,7 @@ rl.on("line", (line) => {
     if (letter === rightOrder.right || letter === countOrder.left) [cube.f, cube.d, cube.b, cube.u] = turnToUpDirection(cube.f, cube.d, cube.b, cube.u, letter);
     if (letter === rightOrder.front || letter === countOrder.back) [cube.u, cube.r, cube.d, cube.l] = turnToClockwise(cube.u, cube.r, cube.d, cube.l, letter);
     if (letter === rightOrder.back || letter === countOrder.front) [cube.u, cube.r, cube.d, cube.l] = turnToCounterClockwise(cube.u, cube.r, cube.d, cube.l, letter);
-    console.log(letter + "\n" + printSide(cube.u, "") + printCenter(cube.l, cube.f, cube.r, cube.b, "") + printSide(cube.d, ""));
+    console.log(recover(letter) + "\n" + printSide(cube.u, "") + printCenter(cube.l, cube.f, cube.r, cube.b, "") + printSide(cube.d, ""));
   }
   rl.setPrompt(promptMsg);
   rl.prompt();
@@ -155,6 +155,12 @@ function turnToCounterClockwise(up, right, down, left, letter) {
 
 function parse(line) {
   return line.replace(/F'/g, "f").replace(/R'/g, "r").replace(/U'/g, "u").replace(/B'/g, "b").replace(/L'/g, "l").replace(/D'/g, "d");
+}
+
+function recover(letter) {
+  const codeNum = line.charCodeAt(0);
+  if (codeNum >= 97 && codeNum <= 122) return letter.toUpperCase() + "'";
+  return letter;
 }
 
 function printSide(arr, str) {
