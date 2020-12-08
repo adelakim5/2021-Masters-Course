@@ -70,6 +70,10 @@ rl.on("line", (line) => {
     if (letter === rightOrder.front || letter === countOrder.back) [cube.u, cube.r, cube.d, cube.l] = turnToClockwise(cube.u, cube.r, cube.d, cube.l, letter);
     if (letter === rightOrder.back || letter === countOrder.front) [cube.u, cube.r, cube.d, cube.l] = turnToCounterClockwise(cube.u, cube.r, cube.d, cube.l, letter);
     console.log(recover(letter) + "\n" + printSide(cube.u, "") + printCenter(cube.l, cube.f, cube.r, cube.b, "") + printSide(cube.d, ""));
+    if (performedOrdersCnt > 0 && isAllDone()) {
+      console.log(`\n모두 다 맞추셨습니다! 축하합니다~`);
+      doQuit();
+    }
   }
   rl.setPrompt(promptMsg);
   rl.prompt();
@@ -81,9 +85,7 @@ rl.on("close", () => {
 function doQuit() {
   const endTime = new Date();
   const duringTime = calculateDuringTime(endTime);
-  let result = `\n경과시간: ${duringTime}\n조작개수: ${performedOrdersCnt}`;
-  if (isAllDone() && performedOrdersCnt > 0) result += `\n모두 다 맞추셨습니다! 축하합니다👏👏👏`;
-  console.log(result + `\n이용해주셔서 감사합니다.`);
+  console.log(`\n경과시간: ${duringTime}\n조작개수: ${performedOrdersCnt}\n이용해주셔서 감사합니다.`);
   rl.close();
 }
 
