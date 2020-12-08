@@ -68,6 +68,10 @@ rl.on("line", (line) => {
     if (letter === rightOrder.left || letter === countOrder.right) {
       [cube.f, cube.u, cube.b, cube.d] = turnToDownDirection(cube.f, cube.u, cube.b, cube.d, letter);
     }
+    if (letter === rightOrder.right || letter === countOrder.left) {
+      [cube.f, cube.d, cube.b, cube.u] = turnToUpDirection(cube.f, cube.d, cube.b, cube.u, letter);
+    }
+
     console.log(letter + "\n" + printSide(cube.u, "") + printCenter(cube.l, cube.f, cube.r, cube.b, "") + printSide(cube.d, ""));
   }
 });
@@ -105,6 +109,18 @@ function turnToDownDirection(front, up, back, down, letter) {
     down[i][col] = temp;
   }
   return [front, up, back, down];
+}
+
+function turnToUpDirection(front, down, back, up, letter) {
+  const col = letter === countOrder.left ? 0 : 2;
+  for (let i = 0; i < 3; i++) {
+    const temp = up[i][col];
+    up[i][col] = front[i][col];
+    front[i][col] = down[i][col];
+    down[i][col] = back[i][col];
+    back[i][col] = temp;
+  }
+  return [front, down, back, up];
 }
 
 function parse(line) {
