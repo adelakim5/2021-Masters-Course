@@ -5,6 +5,7 @@ const rl = require("readline").createInterface({
   output: process.stdout,
 });
 const promptMsg = "CUBE> ";
+const quit = "Q";
 const rightOrder = {
   front: "F",
   right: "R",
@@ -53,30 +54,21 @@ const cube = {
     ["R", "R", "R"],
   ],
 };
+let performedOrdersCnt = 0;
 rl.setPrompt(printSide(cube.u, "") + printCenter(cube.l, cube.f, cube.r, cube.b, "") + printSide(cube.d, "") + promptMsg);
 rl.prompt();
 rl.on("line", (line) => {
   line = parse(line);
   for (let i = 0; i < line.length; i++) {
     const letter = line[i] === "2" ? line[i - 1] : line[i];
-    if (letter === rightOrder.up || letter === countOrder.down) {
-      [cube.f, cube.r, cube.b, cube.l] = turnToLeftDirection(cube.f, cube.r, cube.b, cube.l, letter);
-    }
-    if (letter === rightOrder.down || letter === countOrder.up) {
-      [cube.f, cube.r, cube.b, cube.l] = turnToRightDirection(cube.f, cube.r, cube.b, cube.l, letter);
-    }
-    if (letter === rightOrder.left || letter === countOrder.right) {
-      [cube.f, cube.u, cube.b, cube.d] = turnToDownDirection(cube.f, cube.u, cube.b, cube.d, letter);
-    }
-    if (letter === rightOrder.right || letter === countOrder.left) {
-      [cube.f, cube.d, cube.b, cube.u] = turnToUpDirection(cube.f, cube.d, cube.b, cube.u, letter);
-    }
-    if (letter === rightOrder.front || letter === countOrder.back) {
-      [cube.u, cube.r, cube.d, cube.l] = turnToClockwise(cube.u, cube.r, cube.d, cube.l, letter);
-    }
-    if (letter === rightOrder.back || letter === countOrder.front) {
-      [cube.u, cube.r, cube.d, cube.l] = turnToCounterClockwise(cube.u, cube.r, cube.d, cube.l, letter);
-    }
+    if (letter === quit) doQuit(performedOrdersCnt);
+    performedOrdersCnt++;
+    if (letter === rightOrder.up || letter === countOrder.down) [cube.f, cube.r, cube.b, cube.l] = turnToLeftDirection(cube.f, cube.r, cube.b, cube.l, letter);
+    if (letter === rightOrder.down || letter === countOrder.up) [cube.f, cube.r, cube.b, cube.l] = turnToRightDirection(cube.f, cube.r, cube.b, cube.l, letter);
+    if (letter === rightOrder.left || letter === countOrder.right) [cube.f, cube.u, cube.b, cube.d] = turnToDownDirection(cube.f, cube.u, cube.b, cube.d, letter);
+    if (letter === rightOrder.right || letter === countOrder.left) [cube.f, cube.d, cube.b, cube.u] = turnToUpDirection(cube.f, cube.d, cube.b, cube.u, letter);
+    if (letter === rightOrder.front || letter === countOrder.back) [cube.u, cube.r, cube.d, cube.l] = turnToClockwise(cube.u, cube.r, cube.d, cube.l, letter);
+    if (letter === rightOrder.back || letter === countOrder.front) [cube.u, cube.r, cube.d, cube.l] = turnToCounterClockwise(cube.u, cube.r, cube.d, cube.l, letter);
     console.log(letter + "\n" + printSide(cube.u, "") + printCenter(cube.l, cube.f, cube.r, cube.b, "") + printSide(cube.d, ""));
   }
   rl.setPrompt(promptMsg);
@@ -85,6 +77,11 @@ rl.on("line", (line) => {
 rl.on("close", () => {
   process.exit();
 });
+
+function doQuit(count) {
+  console.log(`\n경과시간: ${undefined}\n조작개수: ${count}\n이용해주셔서 감사합니다.`);
+  rl.close();
+}
 
 function turnToLeftDirection(front, right, back, left, letter) {
   const row = letter === rightOrder.up ? 0 : 2;
