@@ -49,18 +49,25 @@ const cube = {
     ["R", "R", "R"],
   ],
 };
-rl.setPrompt(printFirst(cube.f) + "\n" + promptMsg);
+rl.setPrompt(printSide(cube.u, "") + printCenter(cube.f, cube.r, cube.b, cube.l, "") + printSide(cube.d, "") + promptMsg);
 rl.prompt();
 rl.on("line", (line) => {});
 rl.on("close", () => {
   process.exit();
 });
 
-function printFirst(arr) {
-  let res = "";
-  const space = "                 ";
-  for (let i = 0; i < arr.length; i++) {
+function printSide(arr, res) {
+  const space = "               ";
+  for (let i = 0; i < 3; i++) {
     res += space + arr[i].join(" ") + "\n";
   }
-  return res;
+  return res + "\n";
+}
+
+function printCenter(arr1, arr2, arr3, arr4, res) {
+  const space = "     ";
+  for (let i = 0; i < 3; i++) {
+    res += arr1[i].join(" ") + space + arr2[i].join(" ") + space + arr3[i].join(" ") + space + arr4[i].join(" ") + "\n";
+  }
+  return res + "\n";
 }
