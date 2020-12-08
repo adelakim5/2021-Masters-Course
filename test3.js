@@ -81,8 +81,9 @@ rl.on("close", () => {
 function doQuit() {
   const endTime = new Date();
   const duringTime = calculateDuringTime(endTime);
-  // console.log(`startTime: ${startTime}`, `endTime: ${endTime}`);
-  console.log(`\n경과시간: ${duringTime}\n조작개수: ${performedOrdersCnt}\n이용해주셔서 감사합니다.`);
+  let result = `\n경과시간: ${duringTime}\n조작개수: ${performedOrdersCnt}`;
+  if (isAllDone() && performedOrdersCnt > 0) result += `\n모두 다 맞추셨습니다! 축하합니다👏👏👏`;
+  console.log(result + `\n이용해주셔서 감사합니다.`);
   rl.close();
 }
 
@@ -101,6 +102,19 @@ function calculateDuringTime(endTime) {
   seconds -= startSeconds;
   hour -= startHour;
   return [hour, minutes, seconds].join(":");
+}
+
+function isAllDone() {
+  const cubeParts = [cube.f, cube.r, cube.b, cube.l, cube.u, cube.d];
+  for (let currPart of cubeParts) {
+    const color = currPart[0][0];
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        if (color !== currPart[i][j]) return false;
+      }
+    }
+  }
+  return true;
 }
 
 function turnToLeftDirection(front, right, back, left, letter) {
