@@ -1,3 +1,5 @@
+const { dir } = require("console");
+
 const rl = require("readline").createInterface({
   input: process.stdin,
   output: process.stdout,
@@ -58,10 +60,13 @@ rl.on("line", (line) => {
   for (let i = 0; i < line.length; i++) {
     const letter = line[i] === "2" ? line[i - 1] : line[i];
     if (letter === rightOrder.up || letter === countOrder.down) {
-      [cube.f, cube.r, cube.b, cube.l] = turnToDirection(cube.f, cube.r, cube.b, cube.l, letter, "left");
+      [cube.f, cube.r, cube.b, cube.l] = turnToLeftDirection(cube.f, cube.r, cube.b, cube.l, letter);
     }
     if (letter === rightOrder.down || letter === countOrder.up) {
-      [cube.f, cube.r, cube.b, cube.l] = turnToDirection(cube.f, cube.r, cube.b, cube.l, letter, "right");
+      [cube.f, cube.r, cube.b, cube.l] = turnToRightDirection(cube.f, cube.r, cube.b, cube.l, letter);
+    }
+    if (letter === rightOrder.left || letter === countOrder.right) {
+      [cube.f, cube.u, cube.b, cube.d] = turnToDownDirection(cube.f, cube.u, cube.b, cube.d, letter);
     }
     console.log(letter + "\n" + printSide(cube.u, "") + printCenter(cube.l, cube.f, cube.r, cube.b, "") + printSide(cube.d, ""));
   }
@@ -70,23 +75,36 @@ rl.on("close", () => {
   process.exit();
 });
 
-function turnToDirection(front, right, back, left, letter, direction) {
-  const row = letter === rightOrder.up || letter === countOrder.up ? 0 : 2;
-  if (direction === "left") {
-    const temp = left[row];
-    left[row] = front[row];
-    front[row] = right[row];
-    right[row] = back[row];
-    back[row] = temp;
-  }
-  if (direction === "right") {
-    const temp = right[row];
-    right[row] = front[row];
-    front[row] = left[row];
-    left[row] = back[row];
-    back[row] = temp;
-  }
+function turnToLeftDirection(front, right, back, left, letter) {
+  const row = letter === rightOrder.up ? 0 : 2;
+  const temp = left[row];
+  left[row] = front[row];
+  front[row] = right[row];
+  right[row] = back[row];
+  back[row] = temp;
   return [front, right, back, left];
+}
+
+function turnToRightDirection(front, right, back, left, letter) {
+  const row = letter === countOrder.up ? 0 : 2;
+  const temp = right[row];
+  right[row] = front[row];
+  front[row] = left[row];
+  left[row] = back[row];
+  back[row] = temp;
+  return [front, right, back, left];
+}
+
+function turnToDownDirection(front, up, back, down, letter) {
+  const col = letter === rightOrder.left ? 0 : 2;
+  for (let i = 0; i < 3; i++) {
+    const temp = front[i][col];
+    front[i][col] = up[i][col];
+    up[i][col] = back[i][col];
+    back[i][col] = down[i][col];
+    down[i][col] = temp;
+  }
+  return [front, up, back, down];
 }
 
 function parse(line) {
