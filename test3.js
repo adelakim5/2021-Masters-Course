@@ -10,12 +10,12 @@ const order = {
   back: "B",
   left: "L",
   down: "D",
-  counterFront: "F'",
-  counterRight: "R'",
-  counterUp: "U'",
-  counterBack: "B'",
-  counterLeft: "L'",
-  counterDonw: "D'",
+  counterFront: "f",
+  counterRight: "r'",
+  counterUp: "u'",
+  counterBack: "b'",
+  counterLeft: "l'",
+  counterDonw: "d'",
 };
 const cube = {
   f: [
@@ -49,12 +49,16 @@ const cube = {
     ["R", "R", "R"],
   ],
 };
-rl.setPrompt(printSide(cube.u, "") + printCenter(cube.f, cube.r, cube.b, cube.l, "") + printSide(cube.d, "") + promptMsg);
+rl.setPrompt(printSide(cube.u, "") + printCenter(cube.l, cube.f, cube.r, cube.b, "") + printSide(cube.d, "") + promptMsg);
 rl.prompt();
 rl.on("line", (line) => {});
 rl.on("close", () => {
   process.exit();
 });
+
+function parse(letters) {
+  return letters.replace(/F'/g, "f").replace(/R'/g, "r").replace(/U'/g, "u").replace(/B'/g, "b").replace(/L'/g, "l").replace(/D'/g, "d");
+}
 
 function printSide(arr, res) {
   const space = "               ";
