@@ -74,9 +74,13 @@ rl.on("line", (line) => {
     if (letter === rightOrder.front || letter === countOrder.back) {
       [cube.u, cube.r, cube.d, cube.l] = turnToClockwise(cube.u, cube.r, cube.d, cube.l, letter);
     }
-
+    if (letter === rightOrder.back || letter === countOrder.front) {
+      [cube.u, cube.r, cube.d, cube.l] = turnToCounterClockwise(cube.u, cube.r, cube.d, cube.l, letter);
+    }
     console.log(letter + "\n" + printSide(cube.u, "") + printCenter(cube.l, cube.f, cube.r, cube.b, "") + printSide(cube.d, ""));
   }
+  rl.setPrompt(promptMsg);
+  rl.prompt();
 });
 rl.on("close", () => {
   process.exit();
@@ -132,9 +136,22 @@ function turnToClockwise(up, right, down, left, letter) {
   for (let i = 0; i < 3; i++) {
     const temp = right[i][col];
     right[i][col] = up[row][i];
-    up[row][i] = left[2 - i][col];
-    left[2 - i][col] = down[row][2 - i];
+    up[row][i] = left[2 - i][row];
+    left[2 - i][row] = down[row][2 - i];
     down[row][2 - i] = temp;
+  }
+  return [up, right, down, left];
+}
+
+function turnToCounterClockwise(up, right, down, left, letter) {
+  const row = letter === countOrder.front ? 2 : 0;
+  const col = letter === countOrder.front ? 0 : 2;
+  for (let i = 0; i < 3; i++) {
+    const temp = right[i][col];
+    right[i][col] = down[row][2 - i];
+    down[row][2 - i] = left[2 - i][row];
+    left[2 - i][row] = up[row][i];
+    up[row][i] = temp;
   }
   return [up, right, down, left];
 }
