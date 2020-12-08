@@ -14,7 +14,7 @@ const rightOrder = {
 const countOrder = {
   front: "f",
   right: "r",
-  up: "u'",
+  up: "u",
   back: "b",
   left: "l",
   down: "d",
@@ -58,8 +58,10 @@ rl.on("line", (line) => {
   for (let i = 0; i < line.length; i++) {
     const letter = line[i] === "2" ? line[i - 1] : line[i];
     if (letter === rightOrder.up || letter === countOrder.down) {
-      console.log(letter);
-      [cube.f, cube.r, cube.b, cube.l] = turnToRightDirection(cube.f, cube.r, cube.b, cube.l, letter);
+      [cube.f, cube.r, cube.b, cube.l] = turnToDirection(cube.f, cube.r, cube.b, cube.l, letter, "left");
+    }
+    if (letter === rightOrder.down || letter === countOrder.up) {
+      [cube.f, cube.r, cube.b, cube.l] = turnToDirection(cube.f, cube.r, cube.b, cube.l, letter, "right");
     }
     console.log(letter + "\n" + printSide(cube.u, "") + printCenter(cube.l, cube.f, cube.r, cube.b, "") + printSide(cube.d, ""));
   }
@@ -68,18 +70,22 @@ rl.on("close", () => {
   process.exit();
 });
 
-function turnToRightDirection(front, right, back, left, letter) {
-  const row = letter === rightOrder.up ? 0 : 2;
-  const total = [...front[row], ...right[row], ...back[row], ...left[row]];
-  const temp = total[0];
-  for (let i = 1; i < total.length; i++) {
-    total[i - 1] = total[i];
+function turnToDirection(front, right, back, left, letter, direction) {
+  const row = letter === rightOrder.up || letter === countOrder.up ? 0 : 2;
+  if (direction === "left") {
+    const temp = left[row];
+    left[row] = front[row];
+    front[row] = right[row];
+    right[row] = back[row];
+    back[row] = temp;
   }
-  total[total.length - 1] = temp;
-  front[row] = total.slice(0, 3);
-  right[row] = total.slice(3, 6);
-  back[row] = total.slice(6, 9);
-  left[row] = total.slice(9, total.length);
+  if (direction === "right") {
+    const temp = right[row];
+    right[row] = front[row];
+    front[row] = left[row];
+    left[row] = back[row];
+    back[row] = temp;
+  }
   return [front, right, back, left];
 }
 
