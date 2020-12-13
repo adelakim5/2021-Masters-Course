@@ -44,7 +44,7 @@ function main(line) {
 }
 
 function parse(line) {
-  return line.replace(/U'/g, "u").replace(/R'/g, "r").replace(/L'/g, "l").replace(/B'/g, "b");
+  return line.toUpperCase().replace(/U'/g, "u").replace(/R'/g, "r").replace(/L'/g, "l").replace(/B'/g, "b");
 }
 
 function recover(letter) {
