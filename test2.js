@@ -4,7 +4,7 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 const init = `R R W\nG C W\nG B B\n`;
-const promptMsg = "\n명령어를 입력해주세요> ";
+const promptMsg = "\nCUBE> ";
 let arr = init.split("\n").map((e) => e.split(" "));
 const order = {
   toLeftOfUp: "U",
