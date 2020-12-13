@@ -1,3 +1,5 @@
+const { FORMERR } = require("dns");
+
 const rl = require("readline").createInterface({
   input: process.stdin,
   output: process.stdout,
@@ -160,11 +162,12 @@ function turnToRightDirection(front, right, back, left, letter) {
 
 function turnToDownDirection(front, up, back, down, letter) {
   const col = letter === rightOrder.left ? 0 : 2;
+  const counterCol = letter === rightOrder.left ? 2 : 0;
   for (let i = 0; i < 3; i++) {
     const temp = front[i][col];
     front[i][col] = up[i][col];
-    up[i][col] = back[i][col];
-    back[i][col] = down[i][col];
+    up[i][col] = back[2 - i][counterCol];
+    back[2 - i][counterCol] = down[i][col];
     down[i][col] = temp;
   }
   return [front, up, back, down];
@@ -172,12 +175,13 @@ function turnToDownDirection(front, up, back, down, letter) {
 
 function turnToUpDirection(front, down, back, up, letter) {
   const col = letter === countOrder.left ? 0 : 2;
+  const counterCol = letter === countOrder.left ? 2 : 0;
   for (let i = 0; i < 3; i++) {
     const temp = up[i][col];
     up[i][col] = front[i][col];
     front[i][col] = down[i][col];
-    down[i][col] = back[i][col];
-    back[i][col] = temp;
+    down[i][col] = back[2 - i][counterCol];
+    back[2 - i][counterCol] = temp;
   }
   return [front, down, back, up];
 }
@@ -189,8 +193,8 @@ function turnToClockwise(up, right, down, left, letter) {
     const temp = right[i][col];
     right[i][col] = up[row][i];
     up[row][i] = left[2 - i][row];
-    left[2 - i][row] = down[row][2 - i];
-    down[row][2 - i] = temp;
+    left[2 - i][row] = down[col][2 - i];
+    down[col][2 - i] = temp;
   }
   return [up, right, down, left];
 }
@@ -200,8 +204,8 @@ function turnToCounterClockwise(up, right, down, left, letter) {
   const col = letter === countOrder.front ? 0 : 2;
   for (let i = 0; i < 3; i++) {
     const temp = right[i][col];
-    right[i][col] = down[row][2 - i];
-    down[row][2 - i] = left[2 - i][row];
+    right[i][col] = down[col][2 - i];
+    down[col][2 - i] = left[2 - i][row];
     left[2 - i][row] = up[row][i];
     up[row][i] = temp;
   }
@@ -209,7 +213,7 @@ function turnToCounterClockwise(up, right, down, left, letter) {
 }
 
 function parse(line) {
-  return line.replace(/F'/g, "f").replace(/R'/g, "r").replace(/U'/g, "u").replace(/B'/g, "b").replace(/L'/g, "l").replace(/D'/g, "d");
+  return line.toUpperCase().replace(/F'/g, "f").replace(/R'/g, "r").replace(/U'/g, "u").replace(/B'/g, "b").replace(/L'/g, "l").replace(/D'/g, "d");
 }
 
 function recover(letter) {
