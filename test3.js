@@ -20,6 +20,7 @@ const countOrder = {
   left: "l",
   down: "d",
 };
+const shuffle = "S";
 const cube = {
   f: [
     ["O", "O", "O"],
@@ -59,28 +60,46 @@ rl.prompt();
 rl.on("line", (line) => {
   if (startTime === "") startTime = new Date();
   line = parse(line);
-  for (let i = 0; i < line.length; i++) {
-    const letter = line[i] === "2" ? line[i - 1] : line[i];
-    if (letter === quit) doQuit();
-    performedOrdersCnt++;
-    if (letter === rightOrder.up || letter === countOrder.down) [cube.f, cube.r, cube.b, cube.l] = turnToLeftDirection(cube.f, cube.r, cube.b, cube.l, letter);
-    if (letter === rightOrder.down || letter === countOrder.up) [cube.f, cube.r, cube.b, cube.l] = turnToRightDirection(cube.f, cube.r, cube.b, cube.l, letter);
-    if (letter === rightOrder.left || letter === countOrder.right) [cube.f, cube.u, cube.b, cube.d] = turnToDownDirection(cube.f, cube.u, cube.b, cube.d, letter);
-    if (letter === rightOrder.right || letter === countOrder.left) [cube.f, cube.d, cube.b, cube.u] = turnToUpDirection(cube.f, cube.d, cube.b, cube.u, letter);
-    if (letter === rightOrder.front || letter === countOrder.back) [cube.u, cube.r, cube.d, cube.l] = turnToClockwise(cube.u, cube.r, cube.d, cube.l, letter);
-    if (letter === rightOrder.back || letter === countOrder.front) [cube.u, cube.r, cube.d, cube.l] = turnToCounterClockwise(cube.u, cube.r, cube.d, cube.l, letter);
-    console.log(recover(letter) + "\n" + printSide(cube.u, "") + printCenter(cube.l, cube.f, cube.r, cube.b, "") + printSide(cube.d, ""));
-    if (performedOrdersCnt > 0 && isAllDone()) {
-      console.log(`\n모두 다 맞추셨습니다! 축하합니다~`);
-      doQuit();
+  try {
+    for (let i = 0; i < line.length; i++) {
+      const letter = line[i] === "2" ? line[i - 1] : line[i];
+      if (letter === quit) doQuit();
+      performedOrdersCnt++;
+      if (letter === shuffle) doShuffle();
+      else excute(letter);
+      console.log(recover(letter) + "\n" + printSide(cube.u, "") + printCenter(cube.l, cube.f, cube.r, cube.b, "") + printSide(cube.d, ""));
+      if (performedOrdersCnt > 0 && isAllDone()) {
+        console.log(`\n모두 다 맞추셨습니다! 축하합니다~`);
+        doQuit();
+      }
     }
+  } catch (e) {
+    console.log("잘못된 입력입니다. 다시 입력해주세요.");
   }
   rl.setPrompt(promptMsg);
   rl.prompt();
 });
+
+function excute(letter) {
+  if (letter === rightOrder.up || letter === countOrder.down) [cube.f, cube.r, cube.b, cube.l] = turnToLeftDirection(cube.f, cube.r, cube.b, cube.l, letter);
+  else if (letter === rightOrder.down || letter === countOrder.up) [cube.f, cube.r, cube.b, cube.l] = turnToRightDirection(cube.f, cube.r, cube.b, cube.l, letter);
+  else if (letter === rightOrder.left || letter === countOrder.right) [cube.f, cube.u, cube.b, cube.d] = turnToDownDirection(cube.f, cube.u, cube.b, cube.d, letter);
+  else if (letter === rightOrder.right || letter === countOrder.left) [cube.f, cube.d, cube.b, cube.u] = turnToUpDirection(cube.f, cube.d, cube.b, cube.u, letter);
+  else if (letter === rightOrder.front || letter === countOrder.back) [cube.u, cube.r, cube.d, cube.l] = turnToClockwise(cube.u, cube.r, cube.d, cube.l, letter);
+  else if (letter === rightOrder.back || letter === countOrder.front) [cube.u, cube.r, cube.d, cube.l] = turnToCounterClockwise(cube.u, cube.r, cube.d, cube.l, letter);
+  else throw new Error("non-existed letter");
+}
 rl.on("close", () => {
   process.exit();
 });
+
+function doShuffle() {
+  const command = [..."FURBLDfrubld"];
+  const randomInterval = parseInt(Math.random() * 1000 + 500);
+  for (let i = 0; i < randomInterval; i++) {
+    excute(command[parseInt(Math.random() * command.length)]);
+  }
+}
 
 function doQuit() {
   const endTime = new Date();
